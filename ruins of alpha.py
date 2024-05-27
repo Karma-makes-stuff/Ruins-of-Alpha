@@ -2,10 +2,6 @@ print('''Welcome to the ruins of Alpha.
 This is a short text-adventure dungeon crawler.
 You are an adventurer who goes on a quest for glory (and loot) in the
 *Ruins of Alpha*
-In this dungeon, you will encounter various enemies.
-The most dangerous of all, however, would be the spaghetti code.
-That's why you should only ever enter numbers into the console.
-Otherwise, the game just crashes.
 As you enter into the dungeon, you are greated by an angry bat.
 The bat charges at you in a blind rage!
 ''')
