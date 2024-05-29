@@ -494,8 +494,8 @@ def red_potion():
             print('Your input must be an integer(a whole number)')
 def antidote():
     global inventory
-    global health
     global incombat
+    global status
     print('An antidote to cure poisoning.\n 1 use\n 2 discard\n 3 back')
     L=True
     while L:
@@ -846,6 +846,7 @@ def room5():
 The large spider rapidly crawling towards you gives you an Idea why.
               ''')
         enemy='spider'
+        enemystats()
         encounter()
         combat(enemy)
         gameovercheck()
