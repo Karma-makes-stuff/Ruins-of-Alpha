@@ -38,28 +38,29 @@ def combatitem(): #selection of items in combat
     while LL:
         try:
             item=int(input())-1
-            if inventory[item]=='back':
-                bozo=True
-                break
-            elif inventory[item]=='bread':
-                bread()
-                break
-            elif inventory[item]=='shuriken':
-                shuriken()
-                break
-            elif inventory[item]=='red potion':
-                red_potion()
-                break
-            elif inventory[item]=='antidote':
-                antidote()
-                break
-            elif inventory[item]=='blue potion':
-                blue_potion()
-                break
-            elif inventory[item]=='bandages':
-                bandages()
-                break
-        except:
+            match inventory[item]:
+                case 'back':
+                    bozo=True
+                    break
+                case 'bread':
+                    bread()
+                    break
+                case 'shuriken':
+                    shuriken()
+                    break
+                case 'red potion':
+                    red_potion()
+                    break
+                case 'antidote':
+                    antidote()
+                    break
+                case 'blue potion':
+                    blue_potion()
+                    break
+                case 'bandages':
+                    bandages()
+                    break
+        except IndexError:
             print('This Item does not exist.\nWhich item?')      
 def combat(enemy): #the combat loop
     global health
@@ -79,136 +80,138 @@ def combat(enemy): #the combat loop
         dmg=0
         try:
             action=int(input('what do you do?\n 1 attack\n 2 item\n 3 guard \n 4 observe\n'))
-            if action==1:
-                enemyhp=enemyhp-atk
-                print('You deal',atk,'damage to the',enemy,'.')
-                if enemyhp<=0:
-                    break
-            elif action==2:
-                combatitem()
-                if enemyhp<=0:
-                    break
-            elif action==3:
-                guard=True
-            elif action==4:
-                healthcheck()
-                print('The',enemy,'seems to have',enemyhp,'health left.')
-            else:
-                print('please input a valid number!')
-                bozo=True
-        except:
+            match action:
+                case 1:
+                    enemyhp=enemyhp-atk
+                    print('You deal',atk,'damage to the',enemy,'.')
+                    if enemyhp<=0:
+                        break
+                case 2:
+                    combatitem()
+                    if enemyhp<=0:
+                        break
+                case 3:
+                    guard=True
+                case 4:
+                    healthcheck()
+                    print('The',enemy,'seems to have',enemyhp,'health left.')
+                case _:
+                    print('please input a valid number!')
+                    bozo=True
+        except ValueError:
             print('Your input must be an integer(a whole number)')
             bozo=True
         if bozo==False:
             if enemyhp<=0:
                 break
-            if enemy=='bat':
-                print('The bat attacks!')
-                dmg=enemyatk-armor
-                if guard==True:
-                    health=health-(dmg//3)
-                    print('You took',(dmg//3),'damage.')
-                if guard==False:
-                    health=health-dmg
-                    print('You took',dmg,'damage.')
-            elif enemy=='skeleton':
-                if turncount!=2:
-                    print('The skeleton attacks!')
+            match enemy:
+                case 'bat':
+                    print('The bat attacks!')
                     dmg=enemyatk-armor
                     if guard==True:
-                        health=health-(dmg//3)                       
-                        if turncount==3:
-                            print("You took",(dmg//3),"damage, but you avoided the worst.")
+                        health=health-(dmg//3)
+                        print('You took',(dmg//3),'damage.')
+                    else:
+                        health=health-dmg
+                        print('You took',dmg,'damage.')
+                case 'skeleton':
+                    if turncount!=2:
+                        print('The skeleton attacks!')
+                        dmg=enemyatk-armor
+                        if guard==True:
+                            health=health-(dmg//3)                       
+                            if turncount==3:
+                                print("You took",(dmg//3),"damage, but you avoided the worst.")
+                            else:
+                                print('You took',(dmg//3),'damage.')
                         else:
+                            health=health-dmg
+                            print('You took',dmg,'damage.')
+                            if turncount==3:
+                                print('You took',dmg,'damage!')
+                                print('The liquid sinks deep into your fresh wound.')
+                                status=1
+                    if turncount==2:
+                        print('The skeleton pours suspicious liquid on its weapon.')
+                case 'spider':
+                    print('The spider attacks!')
+                    dmg=enemyatk-armor
+                    if guard==True:
+                        health=health-(dmg//3)
+                        print('You took',(dmg//3),'damage.')
+                    else:
+                        health=health-dmg
+                        print('You took',dmg,'damage.')
+                case 'ghoul':
+                    if turncount%3==0:
+                        enemyatk=40
+                    else:
+                        enemyatk=20
+                    if (turncount+1)%3==0:
+                        print('The ghoul looks at you with wide eyes.')
+                    else:
+                        print('The ghoul claws at you!')
+                        dmg=enemyatk-armor
+                        if guard==True:
+                            health=health-(dmg//3)
                             print('You took',(dmg//3),'damage.')
-                    if guard==False:
-                        health=health-dmg
-                        print('You took',dmg,'damage.')
-                        if turncount==3:
-                            print('You took',dmg,'damage!')
-                            print('The liquid sinks deep into your fresh wound.')
-                            status=1
-                if turncount==2:
-                    print('The skeleton pours suspicious liquid on its weapon.')
-            elif enemy=='spider':
-                print('The spider attacks!')
-                dmg=enemyatk-armor
-                if guard==True:
-                    health=health-(dmg//3)
-                    print('You took',(dmg//3),'damage.')
-                if guard==False:
-                    health=health-dmg
-                    print('You took',dmg,'damage.')
-            elif enemy=='ghoul':
-                if turncount%3==0:
-                    enemyatk=40
-                else:
-                    enemyatk=20
-                if (turncount+1)%3==0:
-                    print('The ghoul looks at you with wide eyes.')
-                else:
-                    print('The ghoul claws at you!')
-                    dmg=enemyatk-armor
-                    if guard==True:
-                        health=health-(dmg//3)
-                        print('You took',(dmg//3),'damage.')
-                        if turncount%3==0:
+                            if turncount%3==0:
+                                print("The hit still hurts, but you avoided the worst.")
+                        else:
+                            health=health-dmg
+                            print('You took',dmg,'damage.')
+                            if turncount%3==0:
+                                print("The ghoul's bite tore a chunk of flesh out.")
+                                status=2        
+                case'vampire':
+                    if turncount==1:
+                        print('The vampire slashes you!')
+                        dmg=(enemyatk-armor)
+                        if guard==True:
+                            health=health-(dmg//3)
+                            print('You took',(dmg//3),'damage.')
+                        else:
+                            health=health-dmg
+                            print('You took',dmg,'damage.')
+                        
+                    elif turncount%3==0:
+                        print('The vampire fixes you with its gaze!')
+                    elif (turncount-1)%3==0:
+                        if guard==True:
+                            dmg=enemyatk+5-armor
+                            health=health-(dmg//3)
                             print("The hit still hurts, but you avoided the worst.")
-                    elif guard==False:
-                        health=health-dmg
-                        print('You took',dmg,'damage.')
-                        if turncount%3==0:
-                            print("The ghoul's bite tore a chunk of flesh out.")
-                            status=2        
-            elif enemy=='vampire':
-                if turncount==1:
-                    print('The vampire slashes you!')
-                    dmg=(enemyatk-armor)
-                    if guard==True:
-                        health=health-(dmg//3)
-                        print('You took',(dmg//3),'damage.')
+                        else:
+                            dmg=enemyatk+5-armor
+                            health=health-dmg
+                            status=2
+                            print('You took',dmg,'damage')
+                            print("The vampire's bite left a bleeding wound!")
                     else:
-                        health=health-dmg
-                        print('You took',dmg,'damage.')
-                    
-                elif turncount%3==0:
-                    print('The vampire fixes you with its gaze!')
-                elif (turncount-1)%3==0:
-                    if guard==True:
-                        dmg=enemyatk+5-armor
-                        health=health-(dmg//3)
-                        print("The hit still hurts, but you avoided the worst.")
-                    else:
-                        dmg=enemyatk+5-armor
-                        health=health-dmg
-                        status=2
-                        print('You took',dmg,'damage')
-                        print("The vampire's bite left a bleeding wound!")
-                else:
-                    print('The vampire slashes you!')
+                        print('The vampire slashes you!')
+                        dmg=enemyatk-armor
+                        if guard==True:
+                            health=health-(dmg//3)
+                            print('You took',(dmg//3),'damage.')
+                        else:
+                            health=health-dmg
+                            print('You took',dmg,'damage.')
+                case _:
+                    print('The ',enemy,'? attacks!')
                     dmg=enemyatk-armor
                     if guard==True:
-                        health=health-(dmg//3)
-                        print('You took',(dmg//3),'damage.')
+                        health=health-(dmg//2)
+                        print('You took',(dmg//2),'damage.')
                     else:
                         health=health-dmg
                         print('You took',dmg,'damage.')
-            else:
-                print('The ',enemy,'? attacks!')
-                dmg=enemyatk-armor
-                if guard==True:
-                    health=health-(dmg//2)
-                    print('You took',(dmg//2),'damage.')
-                if guard==False:
-                    health=health-dmg
-                    print('You took',dmg,'damage.')
             if status==1:
                 health=health-turncount
                 print("You feel like you're rotting from the inside!")
             if status==2:
                 health=health-(dmg//3)
                 print("Blood is dripping from your wounds!")
-            turncount=turncount+1
+            turncount+=1
         if enemyhp<=0:
             break
         if turncount==25:
@@ -257,27 +260,30 @@ def enemystats(): #stores stats of different enemies
     global enemyhp
     global enemyatk
     global enemy
-    if enemy=='bat':
-        enemyhp=20
-        enemyatk=5
-    elif enemy=='skeleton':
-        enemyhp=45
-        enemyatk=6
-    elif enemy=='spider':
-        enemyhp=25
-        enemyatk=10
-    elif enemy=='ghoul':
-        enemyhp=125
-        enemyatk=20
-    elif enemy=='vampire':
-        enemyhp=240
-        enemyatk=30
-    elif enemy=='MissingNo.':        
-        enemyhp=33
-        enemyatk=136
-    else:
-        enemyhp=45
-        enemyatk=7
+
+    #this could probably be replaced by a dict (maybe a global one)
+    match enemy:
+        case 'bat':
+            enemyhp=20
+            enemyatk=5
+        case 'skeleton':
+            enemyhp=45
+            enemyatk=6
+        case 'spider':
+            enemyhp=25
+            enemyatk=10
+        case 'ghoul':
+            enemyhp=125
+            enemyatk=20
+        case 'vampire':
+            enemyhp=240
+            enemyatk=30
+        case 'MissingNo.':        
+            enemyhp=33
+            enemyatk=136
+        case _:
+            enemyhp=45
+            enemyatk=7
 def restitem(): #selection of items outside of combat
     LLLL=True
     while LLLL:
@@ -291,99 +297,96 @@ def restitem(): #selection of items outside of combat
         while LLL:
             try:
                 item=int(input())-1
-                if inventory[item]=='done':
-                    print("You're done here.")
-                    LLLL=False
-                    inventory[0]='back'
-                    break
-                elif inventory[item]=='bread':
-                    bread()
-                    break
-                elif inventory[item]=='shuriken':
-                    shuriken()
-                    break
-                elif inventory[item]=='red potion':
-                    red_potion()
-                    break
-                elif inventory[item]=='antidote':
-                    antidote()
-                    break
-                elif inventory[item]=='blue potion':
-                    blue_potion()
-                    break 
-                elif inventory[item]=='bandages':
-                    bandages()
-                    break
-            except:
-                print('This Item does not exist.\nWHich item?')
+                match inventory[item]:
+                    case 'done':
+                        print("You're done here.")
+                        LLLL=False
+                        inventory[0]='back'
+                        break
+                    case 'bread':
+                        bread()
+                        break
+                    case 'shuriken':
+                        shuriken()
+                        break
+                    case 'red potion':
+                        red_potion()
+                        break
+                    case 'antidote':
+                        antidote()
+                        break
+                    case 'blue potion':
+                        blue_potion()
+                        break 
+                    case 'bandages':
+                        bandages()
+                        break
+            except IndexError:
+                print('This Item does not exist.\nWhich item?')
         break
-def console(): #commad console
+def console(): #command console
     global atk
     global health
     global inventory
     global armor
     global key
+    room_list = {
+        "1": room1,
+        "2": room2,
+        "3": room3,
+        "4": room4,
+        "5": room5,
+        "6": room6,
+        "r": roomr
+    }
     CL=True
     while CL:
         command=input('Opened console. Enter command or close.\n')
-        if command=='help':
-            print('''List of commands:
--health, -fullhealth, -weapon, -godweapon, -armor, -godarmor, -items, -room x, -win''')
-        elif command=='close':
-            break
-        elif command=='weapon':
-            atk=30
-            print('attack set to 30.')
-        elif command=='godweapon':
-            atk=999
-            print('attack set to 999.')
-        elif command=='armor':
-            armor=8
-            print('armor set to 8')
-        elif command=='godarmor':
-            armor=99
-            print('armor set to 99.')
-        elif command=='items':
-            inventory.append('bread')
-            inventory.append('red potion')
-            inventory.append('shuriken')
-            inventory.append('antidote')
-            inventory.append('blue potion')
-            inventory.append('bandages')
-            print('items added to inventory')
-        elif command=='room r':
-            roomr()
-            break
-        elif command=='room 1':
-            room1()
-            break
-        elif command=='room 2':
-            room2()
-            break
-        elif command=='room 3':
-            room3()
-            break
-        elif command=='room 4':
-            room4()
-            break
-        elif command=='room 5':
-            room5()
-            break
-        elif command=='room 6':
-            room6()
-            break
-        elif command=='win':
-            win()
-            break
-        elif command=='health':
-            print(health)
-        elif command=='fullhealth':
-            health=100
-            print('set health to 100.')
-        elif command=='key':
-            key=True
-        else:
-            print('invalid command')
+        match command:
+            case 'help':
+                print('''List of commands:
+    -health, -fullhealth, -weapon, -godweapon, -armor, -godarmor, -items, -room x, -win''')
+            case 'close': #(case closed)
+                break
+            case 'weapon':
+                atk=30
+                print('attack set to 30.')
+            case 'godweapon':
+                atk=999
+                print('attack set to 999.')
+            case 'armor':
+                armor=8
+                print('armor set to 8')
+            case 'godarmor':
+                armor=99
+                print('armor set to 99.')
+            case 'items':
+                inventory.append('bread')
+                inventory.append('red potion')
+                inventory.append('shuriken')
+                inventory.append('antidote')
+                inventory.append('blue potion')
+                inventory.append('bandages')
+                print('items added to inventory')
+            case s if s.startswith("room "):
+                room_num = s.removeprefix("room ").strip()
+                if len(room_num) > 0:
+                    room_list.get(room_num)()
+            case 'win':
+                win()
+                break
+            case 'health':
+                print(health)
+            case 'fullhealth':
+                health=100
+                print('set health to 100.')
+            case 'key':
+                key=True
+            case 'exit':
+                exit()
+            case _:
+                print('invalid command')
+        
 def healthcheck():
     global health
     global status
@@ -403,28 +406,29 @@ def bread():
     while L:
         try:
             action=int(input())
-            if action==1:
-                health=health+10
-                if health>100:
-                    health=100
-                print('You recovered some health.')
-                inventory.remove('bread')
-                if incombat==False:
-                    restitem()
-                break
-            if action==2:
-                inventory.remove('bread')
-                print('You removed the bread from your inventory.')
-                if incombat==False:
-                    restitem()
-                break
-            if action==3:
-                if incombat==True:
-                    combatitem()
-                elif incombat==False:
-                    restitem()
-                break
-        except:
+            match action:
+                case 1:
+                    health=health+10
+                    if health>100:
+                        health=100
+                    print('You recovered some health.')
+                    inventory.remove('bread')
+                    if incombat==False:
+                        restitem()
+                    break
+                case 2:
+                    inventory.remove('bread')
+                    print('You removed the bread from your inventory.')
+                    if incombat==False:
+                        restitem()
+                    break
+                case 3:
+                    if incombat==True:
+                        combatitem()
+                    elif incombat==False:
+                        restitem()
+                    break
+        except ValueError:
             print('Your input must be an integer(a whole number)')
 def shuriken():
     global inventory
@@ -436,29 +440,30 @@ def shuriken():
     while L:
         try:
             action=int(input())
-            if action==1:
-                if incombat==True:
-                    enemyhp=enemyhp-(10+(3*atk//2))
-                    print('You threw the shuriken at the',enemy,'. It dealt',(10+(3*atk//2)),'damage.')
+            match action:
+                case 1:
+                    if incombat==True:
+                        enemyhp=enemyhp-(10+(3*atk//2))
+                        print('You threw the shuriken at the',enemy,'. It dealt',(10+(3*atk//2)),'damage.')
+                        inventory.remove('shuriken')
+                        break
+                    if incombat==False:
+                        print('You throw the shuriken against the wall. It does nothing. You pick it up and feel stupid.')
+                        restitem()
+                        break
+                case 2:
                     inventory.remove('shuriken')
+                    print('You removed the shuriken from your inventory.')
+                    if incombat==False:
+                        restitem()
                     break
-                if incombat==False:
-                    print('You throw the shuriken against the wall. It does nothing. You pick it up and feel stupid.')
-                    restitem()
+                case 3:
+                    if incombat==True:
+                        combatitem()
+                    if incombat==False:
+                        restitem()
                     break
-            if action==2:
-                inventory.remove('shuriken')
-                print('You removed the shuriken from your inventory.')
-                if incombat==False:
-                    restitem()
-                break
-            if action==3:
-                if incombat==True:
-                    combatitem()
-                if incombat==False:
-                    restitem()
-                break
-        except:
+        except ValueError:
             print('Your input must be an integer(a whole number)')
 def red_potion():
     global inventory
@@ -469,28 +474,29 @@ def red_potion():
     while L:
         try:
             action=int(input())
-            if action==1:
-                health=health+50
-                if health>100:
-                    health=100
-                print('You recovered a lot of health.')
-                inventory.remove('red potion')
-                if incombat==False:
-                    restitem()
-                break
-            if action==2:
-                inventory.remove('red potion')
-                print('You removed the red potion from your inventory.')
-                if incombat==False:
-                    restitem()
-                break
-            if action==3:
-                if incombat==True:
-                    combatitem()
-                if incombat==False:
-                    restitem()
-                break
-        except:
+            match action:
+                case 1:
+                    health=health+50
+                    if health>100:
+                        health=100
+                    print('You recovered a lot of health.')
+                    inventory.remove('red potion')
+                    if incombat==False:
+                        restitem()
+                    break
+                case 2:
+                    inventory.remove('red potion')
+                    print('You removed the red potion from your inventory.')
+                    if incombat==False:
+                        restitem()
+                    break
+                case 3:
+                    if incombat==True:
+                        combatitem()
+                    if incombat==False:
+                        restitem()
+                    break
+        except ValueError:
             print('Your input must be an integer(a whole number)')
 def antidote():
     global inventory
@@ -501,32 +507,33 @@ def antidote():
     while L:
         try:
             action=int(input())
-            if action==1:
-                if status==1:
-                    status=0
-                    print('Your poisoning was cured.')
+            match action:
+                case 1:
+                    if status==1:
+                        status=0
+                        print('Your poisoning was cured.')
+                        inventory.remove('antidote')
+                        if incombat==False:
+                            restitem()
+                        break
+                    else:
+                        print("You're not poisoned.")
+                        if incombat==True:
+                            combatitem()
+                        if incombat==False:
+                            restitem()
+                            break
+                case 2:
                     inventory.remove('antidote')
-                    if incombat==False:
-                        restitem()
+                    print('You removed the antidote from your inventory.')
                     break
-                else:
-                    print("You're not poisoned.")
+                case 3:
                     if incombat==True:
                         combatitem()
                     if incombat==False:
                         restitem()
-                        break
-            if action==2:
-                inventory.remove('antidote')
-                print('You removed the antidote from your inventory.')
-                break
-            if action==3:
-                if incombat==True:
-                    combatitem()
-                if incombat==False:
-                    restitem()
-                break
-        except:
+                    break
+        except ValueError:
             print('Your input must be an integer(a whole number)')
 def blue_potion():
     global inventory
@@ -538,30 +545,31 @@ def blue_potion():
     while L:
         try:
             action=int(input())
-            if action==1:
-                if incombat==True:
-                    enemyhp=enemyhp-(100)
-                    print('You threw the vial at the',enemy,'. It burst into flames and dealt 100 damage.')
+            match action:
+                case 1:
+                    if incombat==True:
+                        enemyhp=enemyhp-(100)
+                        print('You threw the vial at the',enemy,'. It burst into flames and dealt 100 damage.')
+                        inventory.remove('blue potion')
+                        break
+                    if incombat==False:
+                        print('''You can hear you Chemistry teacher calling out to you.
+        "This is neither the right place, nor the right time to use this item."''')
+                        restitem()
+                        break
+                case 2:
                     inventory.remove('blue potion')
+                    print('You removed the blue potion from your inventory.')
+                    if incombat==False:
+                        restitem()
                     break
-                if incombat==False:
-                    print('''You can hear you Chemistry teacher calling out to you.
-    "This is neither the right place, nor the right time to use this item."''')
-                    restitem()
+                case 3:
+                    if incombat==True:
+                        combatitem()
+                    if incombat==False:
+                        restitem()
                     break
-            if action==2:
-                inventory.remove('blue potion')
-                print('You removed the blue potion from your inventory.')
-                if incombat==False:
-                    restitem()
-                break
-            if action==3:
-                if incombat==True:
-                    combatitem()
-                if incombat==False:
-                    restitem()
-                break
-        except:
+        except ValueError:
             print('Your input must be an integer(a whole number)')
 def bandages():
     global inventory
@@ -572,31 +580,32 @@ def bandages():
     while L:
         try:
             action=int(input())
-            if action==1:
-                if status==2:
-                    status=0
-                    print('Your wound stopped bleeding.')
+            match action:
+                case 1:
+                    if status==2:
+                        status=0
+                        print('Your wound stopped bleeding.')
+                        inventory.remove('bandages')
+                        if incombat==False:
+                            restitem()
+                        break
+                    else:
+                        print("You're not bleeding.")
+                        if incombat==True:
+                            combatitem()
+                        if incombat==False:
+                            restitem()
+                            break
+                case 2:
                     inventory.remove('bandages')
-                    if incombat==False:
-                        restitem()
+                    print('You removed the bandages from your inventory.')
                     break
-                else:
-                    print("You're not bleeding.")
+                case 3:
                     if incombat==True:
                         combatitem()
                     if incombat==False:
                         restitem()
-                        break
-            if action==2:
-                inventory.remove('bandages')
-                print('You removed the bandages from your inventory.')
-                break
-            if action==3:
-                if incombat==True:
-                    combatitem()
-                if incombat==False:
-                    restitem()
-                break
+                    break
         except:
             print('Your input must be an integer(a whole number)')
 
@@ -623,52 +632,43 @@ You enter the first room of the dungeon again. You're starting to become familia
     while L1:
         try:
             choice=int(input())
-            if choice==1:
-                restitem()
-                break
-            elif choice==2:
-                break
-            else:
-                print('please input a valid number!')
+            match choice:
+                case 1:
+                    restitem()
+                    break
+                case 2:
+                    break
+                case _:
+                    print('please input a valid number!')
         except:
             print('Your input must be an integer(a whole number)')
     LLL=True
     while LLL:
-        if first_r2==True and first_r4==True:
-            print('''
-Before you lie three paths.
-1 On the left, you can hear rustling and clacking.
-2 In the middle, there seems to be a gate of some sorts. You need a key to pass here.
-3 On you right, you can hear heavy footsteps. Something big must be in there.
-''')
-        elif first_r2==False and first_r4==True:
-            print('''
-Before you lie three paths.
-1 You've already been to the left.
-2 In the middle, there seems to be a gate of some sorts. You need a key to pass here.
-3 On you right, you can hear heavy footsteps. Something big must be in there.
-''')
+        message = "Before you lie three paths.\n"
+        if first_r2:
+            message += "1 On the left, you can hear rustling and clacking.\n2 In the middle, there seems to be a gate of some sorts. You need a key to pass here.\n"
         else:
-            print('''
-Before you lie three paths.
-1 You've already been to the left.
-2 In the middle, there seems to be a gate of some sorts. You need a key to pass here.
-3 You've already been to the right.
-''')
+            message += "1 You've already been to the left.\n2 In the middle, there seems to be a gate of some sorts. You need a key to pass here.\n"
+        if first_r4:
+            message += "3 On your right, you can hear heavy footsteps. Something big must be in there."
+        else:
+            message += "3 You've already been to the right."
+        print(message)
         try:
             path=int(input())
-            if path==1:
-                room=2
-                break
-            elif path==2:
-                room=3
-                break
-            elif path==3:
-                room=4
-                break
-            else:
-                print('please input a valid number!') 
-        except:
+            match path:
+                case 1:
+                    room=2
+                    break
+                case 2:
+                    room=3
+                    break
+                case 3:
+                    room=4
+                    break
+                case _:
+                    print('please input a valid number!') 
+        except ValueError:
             print('Your input must be an integer(a whole number)') 
 
     first_r1=False
@@ -708,14 +708,15 @@ As you come closer, the skeleton suddenly jolts up and turns towards you. It mus
         while L1:
             try:
                 choice=int(input())
-                if choice==1:
-                    restitem()
-                    break
-                elif choice==2:
-                    break
-                else:
-                    print('please input a valid number!')
-            except:
+                match choice:
+                    case 1:
+                        restitem()
+                        break
+                    case 2:
+                        break
+                    case _:
+                        print('please input a valid number!')
+            except ValueError:
                 print('Your input must be an integer(a whole number)')
         LLL=True
         while LLL:
@@ -726,15 +727,16 @@ There is a door leading deeper into the dungeon. You can also return to the firs
 ''')
             try:
                 path=int(input())
-                if path==1:
-                    room=5
-                    break
-                elif path==2:
-                    room=1
-                    break
-                else:
-                    print('please input a valid number!')
-            except:
+                match path:
+                    case 1:
+                        room=5
+                        break
+                    case 2:
+                        room=1
+                        break
+                    case _:
+                        print('please input a valid number!')
+            except ValueError:
                 print('Your input must be an integer(a whole number)')
 
     first_r2=False
@@ -802,14 +804,15 @@ At the same moment, the ghoul is struck by the realization that fresh meat has j
         while L1:
             try:
                 choice=int(input())
-                if choice==1:
-                    restitem()
-                    break
-                elif choice==2:
-                    break
-                else:
-                    print('please input a valid number!')
-            except:
+                match choice:
+                    case 1:
+                        restitem()
+                        break
+                    case 2:
+                        break
+                    case _:
+                        print('please input a valid number!')
+            except ValueError:
                 print('Your input must be an integer(a whole number)')
         LLL=True
         while LLL:
@@ -820,15 +823,16 @@ There is a door leading deeper into the dungeon. You can also return to the firs
 ''')
             try:
                 path=int(input())
-                if path==1:
-                    room=6
-                    break
-                elif path==2:
-                    room=1
-                    break
-                else:
-                    print('please input a valid number!')
-            except:
+                match path:
+                    case 1:
+                        room=6
+                        break
+                    case 2:
+                        room=1
+                        break
+                    case _:
+                        print('please input a valid number!')
+            except ValueError:
                 print('Your input must be an integer(a whole number)')
     first_r4=False
 def room5():
@@ -873,15 +877,16 @@ It has sustained some damage and obviously failed to adequately protect its prev
                     ''')
             try:
                 path=int(input())
-                if path==1:
-                    room=1
-                    break
-                elif path==2:
-                    room=2
-                    break
-                else:
-                    print('please input a valid number!')
-            except:
+                match path:
+                    case 1:
+                        room=1
+                        break
+                    case 2:
+                        room=2
+                        break
+                    case _:
+                        print('please input a valid number!')
+            except ValueError:
                 print('Your input must be an integer(a whole number)')
         first_r5=False    
 def room6():
@@ -931,15 +936,16 @@ That includes a shiny new sword, plated armor, a red potion and some bandages.
 ''')
             try:
                 path=int(input())
-                if path==1:
-                    room=1
-                    break
-                elif path==2:
-                    room=4
-                    break
-                else:
-                    print('please input a valid number!')
-            except:
+                match path:
+                    case 1:
+                        room=1
+                        break
+                    case 2:
+                        room=4
+                        break
+                    case _:
+                        print('please input a valid number!')
+            except ValueError:
                 print('Your input must be an integer(a whole number)')
     first_r6=False
 def roomr(): #yeah idk, maybe send the player here, if they've been naughty
@@ -949,28 +955,29 @@ def roomr(): #yeah idk, maybe send the player here, if they've been naughty
     console()
 
 while gameover==False: #the game has to run in this loop so I can end it
-    if room==0:
-        enemy='bat'
-        enemystats()
-        encounter()
-        combat(enemy)
-        gameovercheck()
-        #console() #dev option
-        room=1 #turn this off if you want early console
-    elif room==1:
-        room1()
-    elif room==2:
-        room2()
-    elif room==3:
-        room3()
-    elif room==4:
-        room4()
-    elif room==5:
-        room5()
-    elif room==6:
-        room6()
-    else:
-        roomr()
+    match room:
+        case 0:
+            enemy='bat'
+            enemystats()
+            encounter()
+            combat(enemy)
+            gameovercheck()
+            #console() #dev option
+            room=1 #turn this off if you want early console
+        case 1:
+            room1()
+        case 2:
+            room2()
+        case 3:
+            room3()
+        case 4:
+            room4()
+        case 5:
+            room5()
+        case 6:
+            room6()
+        case _:
+            roomr()
 
 if health<=0:
     print('GAME OVER!')
